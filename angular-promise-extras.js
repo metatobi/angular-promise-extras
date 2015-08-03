@@ -8,52 +8,52 @@
    */
   var mapValues = function(obj, callback) {
     if (angular.isArray(obj))
-      return obj.map(callback)
+      return obj.map(callback);
 
-    var ret = {}
+    var ret = {};
     Object.keys(obj).forEach(function(key, val) {
-      ret[key] = callback(obj[key], key)
-    })
-    return ret
-  }
+      ret[key] = callback(obj[key], key);
+    });
+    return ret;
+  };
 
   angular.module('ngPromiseExtras', []).config([ '$provide', function($provide) {
     $provide.decorator('$q', [ '$delegate', function($delegate) {
-      var $q = $delegate
+      var $q = $delegate;
 
       $q.allSettled = function(promises) {
         return $q.all(mapValues(promises, function(promiseOrValue) {
           if (! promiseOrValue.then)
-            return { state: 'fulfilled', value: promiseOrValue }
+            return { state: 'fulfilled', value: promiseOrValue };
 
           return promiseOrValue.then(function(value) {
-            return { state: 'fulfilled', value: value }
+            return { state: 'fulfilled', value: value };
           }, function(reason) {
-            return { state: 'rejected', reason: reason }
-          })
-        }))
-      }
+            return { state: 'rejected', reason: reason };
+          });
+        }));
+      };
 
       $q.map = function(values, callback) {
-        return $q.all(mapValues(values, callback))
-      }
+        return $q.all(mapValues(values, callback));
+      };
 
       $q.mapSettled = function(values, callback) {
-        return $q.allSettled(mapValues(values, callback))
-      }
+        return $q.allSettled(mapValues(values, callback));
+      };
 
       /**
        * Like Bluebird.resolve.
        */
       $q.resolve = function(value) {
         if (value && value.then)
-          return value
+          return value;
         else
-          return $q(function(resolve) { resolve(value) })
-      }
+          return $q(function(resolve) { resolve(value) });
+      };
 
-      return $q
-    } ])
-  } ])
+      return $q;
+    } ]);
+  } ]);
 
 })(window.angular);
